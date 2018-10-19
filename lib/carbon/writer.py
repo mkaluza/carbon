@@ -115,12 +115,14 @@ def writeCachedDataPoints():
 
       archiveConfig = None
       xFilesFactor, aggregationMethod = None, None
+      options = {}
 
       for schema in SCHEMAS:
         if schema.matches(metric):
           if settings.LOG_CREATES:
             log.creates('new metric %s matched schema %s' % (metric, schema.name))
           archiveConfig = [archive.getTuple() for archive in schema.archives]
+          options = schema.options
           break
 
       for schema in AGGREGATION_SCHEMAS:
@@ -136,10 +138,10 @@ def writeCachedDataPoints():
                          " check your storage-schemas.conf file.") % metric)
 
       if settings.LOG_CREATES:
-        log.creates("creating database metric %s (archive=%s xff=%s agg=%s)" %
-                    (metric, archiveConfig, xFilesFactor, aggregationMethod))
+        log.creates("creating database metric %s (archive=%s xff=%s agg=%s options=%s)" %
+                    (metric, archiveConfig, xFilesFactor, aggregationMethod, options))
       try:
-        state.database.create(metric, archiveConfig, xFilesFactor, aggregationMethod)
+        state.database.create(metric, archiveConfig, xFilesFactor, aggregationMethod, **options)
         if settings.ENABLE_TAGS:
           tagQueue.add(metric)
         instrumentation.increment('creates')

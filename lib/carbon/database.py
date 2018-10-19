@@ -132,7 +132,7 @@ else:
         return True
       return False
 
-    def create(self, metric, retentions, xfilesfactor, aggregation_method):
+    def create(self, metric, retentions, xfilesfactor, aggregation_method, **kwargs):
       path = self.getFilesystemPath(metric)
       directory = dirname(path)
       try:
@@ -142,7 +142,7 @@ else:
         log.err("%s" % e)
 
       whisper.create(path, retentions, xfilesfactor, aggregation_method,
-                     self.sparse_create, self.fallocate_create)
+                     self.sparse_create, self.fallocate_create, **kwargs)
 
     def getMetadata(self, metric, key):
       if key != 'aggregationMethod':

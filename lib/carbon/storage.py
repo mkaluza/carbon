@@ -46,11 +46,12 @@ class DefaultSchema(Schema):
 
 class PatternSchema(Schema):
 
-  def __init__(self, name, pattern, archives):
+  def __init__(self, name, pattern, archives, options):
     self.name = name
     self.pattern = pattern
     self.regex = re.compile(pattern)
     self.archives = archives
+    self.options = options
 
   def test(self, metric):
     return self.regex.search(metric)
@@ -82,10 +83,10 @@ def loadStorageSchemas():
 
   for section in config.sections():
     options = dict(config.items(section))
-    pattern = options.get('pattern')
+    pattern = options.pop('pattern')
 
     try:
-      retentions = options['retentions'].split(',')
+      retentions = options.pop('retentions').split(',')
     except KeyError:
       log.err("Schema %s missing 'retentions', skipping" % section)
       continue
@@ -98,7 +99,7 @@ def loadStorageSchemas():
       raise SystemExit(1)
 
     if pattern:
-      mySchema = PatternSchema(section, pattern, archives)
+      mySchema = PatternSchema(section, pattern, archives, options)
     else:
       log.err("Schema %s missing 'pattern', skipping" % section)
       continue
