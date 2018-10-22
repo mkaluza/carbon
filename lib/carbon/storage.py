@@ -46,12 +46,12 @@ class DefaultSchema(Schema):
 
 class PatternSchema(Schema):
 
-  def __init__(self, name, pattern, archives, options):
+  def __init__(self, name, pattern, archives, options = None):
     self.name = name
     self.pattern = pattern
     self.regex = re.compile(pattern)
     self.archives = archives
-    self.options = options
+    self.options = options or {}
 
   def test(self, metric):
     return self.regex.search(metric)
